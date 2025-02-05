@@ -92,12 +92,39 @@ def analytics():
 def view_entries():
     # Get the current page number from the query string (default is 1)
     page = request.args.get('page', 1, type=int)
-    
-    # Query entries with pagination (100 entries per page)
-    pagination = BabyLog.query.order_by(BabyLog.ts.desc()).paginate(page=page, per_page=20)
-    
-    # Pass the pagination object to the template
-    return render_template('view_entries.html', pagination=pagination)
+
+    # Get filter inputs from query parameters
+    selected_activities = request.args.getlist('activity')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+
+    # Start building the query
+    query = BabyLog.query
+
+    # Apply activity filter if selected
+    if selected_activities:
+        query = query.filter(BabyLog.activity.in_(selected_activities))
+
+    # Apply date range filter if specified
+    if start_date:
+        query = query.filter(BabyLog.ts >= start_date)
+    if end_date:
+        query = query.filter(BabyLog.ts <= end_date)
+
+    # Paginate results
+    pagination = query.order_by(BabyLog.ts.desc()).paginate(page=page, per_page=20)
+
+    # Get unique activities for the filter checkboxes
+    activities = db.session.query(BabyLog.activity).distinct().order_by(BabyLog.activity).all()
+    activities = [activity[0] for activity in activities]
+
+    # Pass the pagination and filter information to the template
+    return render_template(
+        'view_entries.html',
+        pagination=pagination,
+        activities=activities,
+        selected_activities=selected_activities
+    )
 
 @app.route('/delete/<int:entry_id>', methods=['POST'])
 def delete_entry(entry_id):
