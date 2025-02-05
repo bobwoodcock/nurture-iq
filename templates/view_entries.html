@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Entries</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body class="container my-5">
+    <h1 class="text-center mb-4">All Entries</h1>
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Activity</th>
+                    <th>Quantity</th>
+                    <th>Comment</th>
+                    <th>Duration (Minutes)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in pagination.items %}
+                <tr>
+                    <td>{{ entry.ts }}</td>
+                    <td>{{ entry.activity }}</td>
+                    <td>{{ entry.quantity }}</td>
+                    <td>{{ entry.comment }}</td>
+                    <td>{% if entry.duration %}{{ entry.duration }} minutes{% else %}&nbsp;{% endif %}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this entry?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination controls -->
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        {% if pagination.has_prev %}
+            <a href="{{ url_for('view_entries', page=pagination.prev_num) }}" class="btn btn-outline-primary">Previous</a>
+        {% else %}
+            <span></span>
+        {% endif %}
+        <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
+        {% if pagination.has_next %}
+            <a href="{{ url_for('view_entries', page=pagination.next_num) }}" class="btn btn-outline-primary">Next</a>
+        {% endif %}
+    </div>
+
+    <br>
+    <a href="/" class="btn btn-secondary">Back to Home</a>
+    <a href="/add" class="btn btn-secondary">Add an Entry</a>
+</body>
+</html>

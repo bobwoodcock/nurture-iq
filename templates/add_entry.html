@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Entry</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setNow() {
+            // Create a Date object for the current time
+            const now = new Date();
+
+            // Convert to ISO format and extract the local date and time
+            const offset = now.getTimezoneOffset(); // Get timezone offset in minutes
+            const pacificNow = new Date(now.getTime() - offset * 60 * 1000);
+
+            // Format the timestamp as 'YYYY-MM-DDTHH:MM'
+            const formattedTimestamp = pacificNow.toISOString().slice(0, 16);
+
+            // Set the value of the input field
+            document.getElementById('ts').value = formattedTimestamp;
+        }
+    </script>
+</head>
+<body class="container my-5">
+    <h1 class="text-center mb-4">Add a New Entry</h1>
+    <form method="POST" class="row g-3">
+        <div class="col-12">
+            <label for="ts" class="form-label">Timestamp:</label>
+            <div class="input-group">
+                <input type="datetime-local" id="ts" name="ts" class="form-control" required>
+                <button type="button" class="btn btn-outline-primary" onclick="setNow()">Now</button>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Select Feeding Activites:</label>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="pumped" name="activities" value="Pumped" class="form-check-input">
+                        <label for="pumped" class="form-check-label">Pumped</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="formula" name="activities" value="Formula" class="form-check-input">
+                        <label for="formula" class="form-check-label">Formula</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="boob" name="activities" value="Boob" class="form-check-input">
+                        <label for="boob" class="form-check-label">Boob</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label for="quantity" class="form-label">Quantity (1 if left blank):</label>
+            <input type="number" id="quantity" name="quantity" class="form-control">
+        </div>
+
+        <div class="col-12">
+            <label for="duration" class="form-label">Duration (Minutes):</label>
+            <input type="number" id="duration" name="duration" class="form-control" min="0" step="1">
+        </div>
+
+        <div class="col-12">
+            <label class="form-label">Select Other Activities:</label>
+            <div class="row">
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="poop" name="activities" value="Poop" class="form-check-input">
+                        <label for="poop" class="form-check-label">Poop</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="pee" name="activities" value="Pee" class="form-check-input">
+                        <label for="pee" class="form-check-label">Pee</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="shart" name="activities" value="Shart" class="form-check-input">
+                        <label for="shart" class="form-check-label">Shart</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="simeticone" name="activities" value="Simeticone" class="form-check-input">
+                        <label for="simeticone" class="form-check-label">Simeticone</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="probiotic" name="activities" value="Probiotic" class="form-check-input">
+                        <label for="probiotic" class="form-check-label">Probiotic</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="vitamin_d" name="activities" value="Vitamin D" class="form-check-input">
+                        <label for="vitamin_d" class="form-check-label">Vitamin D</label>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4">
+                    <div class="form-check">
+                        <input type="checkbox" id="antacid" name="activities" value="Antacid" class="form-check-input">
+                        <label for="antacid" class="form-check-label">Antacid</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <label for="comment" class="form-label">Comment:</label>
+            <textarea id="comment" name="comment" class="form-control" rows="3" maxlength="512" placeholder="Add a comment here..."></textarea>
+        </div>
+        
+
+        <div class="col-12 text-center">
+            <button type="submit" class="btn btn-success">Submit</button>
+            <a href="/" class="btn btn-secondary">Back to Home</a>
+        </div>
+    </form>
+</body>
+</html>
