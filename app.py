@@ -68,7 +68,7 @@ def add_entry():
 
         for activity in activities:
             entry_quantity = quantity if activity in ('Pumped', 'Formula', 'Boob') else 1
-            entry_duration = duration if activity in ('Pumped', 'Formula', 'Boob') else None
+            entry_duration = duration if activity in ('Pumped', 'Formula', 'Boob', 'Tummy Time') else None
             new_entry = BabyLog(
                 ts=ts,
                 activity=activity,
