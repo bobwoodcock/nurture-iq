@@ -176,7 +176,7 @@ def daily_feed_quantity():
             activity,
             CASE
                 WHEN activity IN ('Pumped', 'Formula') THEN quantity
-                WHEN activity = 'Boob' THEN quantity * 60
+                WHEN activity = 'Boob' THEN quantity * 45
                 ELSE 0
                 END AS feed_quantity
             FROM baby_log
