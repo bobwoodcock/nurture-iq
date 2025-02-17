@@ -167,7 +167,7 @@ def aggregated_view():
 def daily_feed_quantity_chart():
     return render_template('analytics/daily_feed_quantity.html')
 
-@app.route('/analytics/daily_feed_quantity')
+@app.route('/data/daily_feed_quantity')
 def daily_feed_quantity():
     result = db.session.execute(text('''
         WITH daily_activities AS (
@@ -181,6 +181,7 @@ def daily_feed_quantity():
                 END AS feed_quantity
             FROM baby_log
             WHERE activity IN ('Pumped','Formula', 'Boob')
+            AND ts BETWEEN NOW() - INTERVAL '1 month' AND NOW()
         )
         SELECT
             day,
@@ -192,6 +193,59 @@ def daily_feed_quantity():
 
     data = [{'day': str(row[0]), 'total_quantity': row[1]} for row in result]
     return {'data': data}
+
+@app.route('/data/weekly_feed_duration')
+def weekly_feed_duration():
+    result = db.session.execute(text('''
+        WITH boob_qty AS (SELECT
+            EXTRACT(YEAR FROM ts) AS ts_year,
+            EXTRACT(WEEK FROM ts) AS ts_week,
+            CASE WHEN activity IN ('Pumped', 'Formula')
+                THEN 'Bottle'
+            ELSE activity
+            END AS activity,
+            CASE WHEN activity = 'Boob'
+                THEN quantity * 45
+                ELSE quantity
+                END AS quantity,
+            duration,
+            CASE WHEN activity = 'Boob'
+                THEN (quantity * 45) / duration
+                ELSE quantity / duration
+                END AS minutes_per_ml,
+            1 AS duration_recorded
+        FROM baby_log
+        WHERE 
+            duration IS NOT NULL
+            AND duration > 0
+            AND activity in ('Boob', 'Pumped', 'Formula')
+            )
+
+        SELECT ts_year AS year,
+            ts_week AS week,
+            activity,
+            AVG(minutes_per_ml) AS avg_mins_per_ml,
+            MIN(minutes_per_ml) AS min_minutes_per_ml,
+            MAX(minutes_per_ml) AS max_mins_per_ml
+        FROM boob_qty
+        GROUP BY ts_year, ts_week, activity
+        ORDER BY ts_year, ts_week
+        ;
+    '''))
+
+    data = [{
+        'year': str(row[0]),
+        'week': str(row[1]),
+        'activity': str(row[2]),
+        'avg_mins_per_ml': row[3],
+        'min_mins_per_ml': row[4],
+        'max_mins_per_ml': row[5]
+        } for row in result]
+    return {'data': data}
+
+@app.route('/analytics/weekly_feed_duration_chart')
+def feed_duration_chart():
+    return render_template('analytics/weekly_feed_duration.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed Duration Analytics</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <h2>Weekly Feed Duration (Minutes per mL)</h2>
+    <canvas id="weeklyFeedChart"></canvas>
+
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data/weekly_feed_duration');
+            const jsonData = await response.json();
+
+            console.log("API Response:", jsonData); // Debugging
+
+            const data = jsonData.data;
+            if (!data || data.length === 0) {
+                console.error("No data received from API");
+                return;
+            }
+
+            const weeks = [...new Set(data.map(d => `W${d.week} (${d.year})`))];
+            console.log("Weeks:", weeks); // Debugging
+
+            const activities = [...new Set(data.map(d => d.activity))];
+
+            const activityColors = {
+                "Boob": "rgba(255, 99, 132, 0.4)",  // Red
+                "Bottle": "rgba(54, 162, 235, 0.4)" // Blue
+            };
+
+            const datasets = activities.flatMap(activity => {
+                const activityData = data.filter(d => d.activity === activity);
+                
+                return [
+                    {
+                        label: `${activity} - Min`,
+                        data: weeks.map(week => {
+                            const entry = activityData.find(d => `W${d.week} (${d.year})` === week);
+                            return entry ? entry.min_mins_per_ml : null;
+                        }),
+                        borderColor: "transparent",
+                        backgroundColor: activityColors[activity],
+                        fill: "+1" // Fill between min and max
+                    },
+                    {
+                        label: `${activity} - Max`,
+                        data: weeks.map(week => {
+                            const entry = activityData.find(d => `W${d.week} (${d.year})` === week);
+                            return entry ? entry.max_mins_per_ml : null;
+                        }),
+                        borderColor: "transparent",
+                        backgroundColor: activityColors[activity],
+                        fill: false // No fill for max line
+                    },
+                    {
+                        label: `${activity} - Avg`,
+                        data: weeks.map(week => {
+                            const entry = activityData.find(d => `W${d.week} (${d.year})` === week);
+                            return entry ? entry.avg_mins_per_ml : null;
+                        }),
+                        borderColor: activityColors[activity]?.replace("0.4", "1"),
+                        backgroundColor: "transparent",
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        fill: false // Line for average
+                    }
+                ];
+            });
+
+            console.log("Datasets:", datasets); // Debugging
+
+            new Chart(document.getElementById("weeklyFeedChart"), {
+                type: "line",
+                data: {
+                    labels: weeks,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: { display: true, text: "Minutes per mL" }
+                        },
+                        x: {
+                            title: { display: true, text: "Week" }
+                        }
+                    }
+                }
+            });
+        }
+
+        fetchData();
+    </script>
+
+</body>
+</html>

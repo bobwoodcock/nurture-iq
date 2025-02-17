@@ -16,7 +16,7 @@
     <a href="/analytics" class="btn btn-secondary">Back to Analytics</a>
 
     <script>
-        fetch('/analytics/daily_feed_quantity')
+        fetch('/data/daily_feed_quantity')
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
