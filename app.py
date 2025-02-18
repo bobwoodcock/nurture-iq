@@ -17,7 +17,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# Example Model
 class BabyLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ts = db.Column(db.DateTime, nullable=False)
