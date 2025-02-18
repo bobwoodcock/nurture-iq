@@ -218,7 +218,7 @@ def weekly_feed_duration():
         WHERE 
             duration IS NOT NULL
             AND duration > 0
-            AND activity in ('Boob', 'Pumped', 'Formula')
+            AND activity in ('Pumped', 'Formula')
             )
 
         SELECT ts_year AS year,
