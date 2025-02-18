@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <title>Feed Duration Analytics</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="container my-5">
 
-    <h2>Weekly Feed Duration (Minutes per mL)</h2>
-    <canvas id="weeklyFeedChart"></canvas>
+    <h1 class="text-center mb-4">Weekly Feed Duration (Minutes per mL)</h1>
+    <canvas id="weeklyFeedChart" width="400" height="200"></canvas>
+    
+    <br>
+    <a href="/analytics" class="btn btn-secondary">Back to Analytics</a>
 
     <script>
         async function fetchData() {
