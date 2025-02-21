@@ -211,7 +211,7 @@ def weekly_feed_duration():
             CASE WHEN activity = 'Boob'
                 THEN (quantity * 45) / duration
                 ELSE quantity / duration
-                END AS minutes_per_ml,
+                END AS mls_per_minute,
             1 AS duration_recorded
         FROM baby_log
         WHERE 
@@ -223,9 +223,9 @@ def weekly_feed_duration():
         SELECT ts_year AS year,
             ts_week AS week,
             activity,
-            AVG(minutes_per_ml) AS avg_mins_per_ml,
-            MIN(minutes_per_ml) AS min_minutes_per_ml,
-            MAX(minutes_per_ml) AS max_mins_per_ml
+            AVG(mls_per_minute) AS avg_mls_per_minute,
+            MIN(mls_per_minute) AS min_mls_per_minute,
+            MAX(mls_per_minute) AS max_mls_per_minute
         FROM boob_qty
         GROUP BY ts_year, ts_week, activity
         ORDER BY ts_year, ts_week
