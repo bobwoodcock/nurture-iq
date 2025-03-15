@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 import json
 from sqlalchemy import func, text
 from datetime import datetime
+import daily_status
 
 with open("config.json") as config_file:
     config = json.load(config_file)
@@ -242,9 +243,20 @@ def weekly_feed_duration():
         } for row in result]
     return {'data': data}
 
-@app.route('/analytics/weekly_feed_duration_chart')
+@app.route("/analytics/weekly_feed_duration_chart")
 def feed_duration_chart():
-    return render_template('analytics/weekly_feed_duration.html')
+    return render_template("analytics/weekly_feed_duration.html")
+
+@app.route("/data/daily_status")
+def daily_status_data():
+    dsa = daily_status.DailyStatusAnalyzer()
+    daily_status_data = dsa.gather_data()
+    return daily_status_data
+
+@app.route("/analytics/daily_status")
+def daily_status_board():
+    data = daily_status_data()
+    return render_template("analytics/daily_status.html", data=data)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
