@@ -79,7 +79,7 @@ def add_entry():
             db.session.add(new_entry)
 
         db.session.commit()
-        return redirect(url_for('view_entries'))
+        return redirect(url_for('daily_status_board'))
 
     return render_template('add_entry.html')
 
