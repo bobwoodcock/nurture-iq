@@ -37,11 +37,21 @@ class DailyStatusAnalyzer:
         else:
             next_time = None
         return next_time
+
+    def last_feed_info(self):
+        df = self.df[self.df["activity"].isin(["Boob", "Pumped", "Formula"])]
+        if not df.empty:
+            data = df.iloc[-1][["ts", "quantity"]].values.tolist()
+            last_feed_info = "Time: %s | Qty: %s" % (datetime.strftime(data[0], "%H:%M"), str(data[1]))
+        else:
+            last_feed_info = None
+        return last_feed_info
     
     def gather_data(self):
         daily_summary_data = {
             "next_nap": self.next_time("Nap", 1.5),
             "next_tongue_exercise":  self.next_time("Tongue Exercise", 4),
+            "last_feed_info": self.last_feed_info(),
             "total_nap_time": self.get_total(["Nap"], "duration"),
             "food_consumed": self.get_total(["Boob", "Pumped", "Formula"], "quantity"),
             "food_consumption_goal": "720",
@@ -54,6 +64,7 @@ def main():
     dsa = DailyStatusAnalyzer()
     data = dsa.gather_data()
     print(data)
+
 
 if __name__ == '__main__':
     main()
