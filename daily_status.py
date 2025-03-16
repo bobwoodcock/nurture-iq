@@ -25,7 +25,7 @@ class DailyStatusAnalyzer:
 
     def get_total(self, activities, metric):
         total = self.df.loc[self.df["activity"].isin(activities), metric].sum()
-        total = f"{total:.2f}"
+        total = f"{total:.0f}"
         return total
     
     def next_time(self, activity, hours):
