@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, Blueprint, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import json
 from sqlalchemy import func, text
 from datetime import datetime
 import daily_status
+from kindercare_ingestion import parse_kinder_email_report
+from email import policy
+from email.parser import BytesParser
 
 with open("config.json") as config_file:
     config = json.load(config_file)
@@ -258,5 +261,50 @@ def daily_status_board():
     data = daily_status_data()
     return render_template("analytics/daily_status.html", data=data)
 
+eml_bp = Blueprint("eml_ingest", __name__)
+@eml_bp.route("/upload-eml", methods=["POST"])
+def upload_eml():
+    if "file" not in request.files:
+        return jsonify({"error": "No file part"}), 400
+
+    file = request.files["file"]
+    if file.filename == "":
+        return jsonify({"error": "No selected file"}), 400
+
+    try:
+        # Parse the email as MIME
+        msg = BytesParser(policy=policy.default).parse(file.stream)
+
+        # Get the plain text content
+        if msg.is_multipart():
+            email_body = ""
+            for part in msg.walk():
+                if part.get_content_type() == "text/plain":
+                    email_body = part.get_content()
+                    break
+            if not email_body:
+                return jsonify({"error": "No text/plain part found in email"}), 400
+        else:
+            email_body = msg.get_content()
+
+        entries = parse_kinder_email_report(email_body)
+
+        for entry in entries:
+            log = BabyLog(
+                ts=entry.ts,
+                activity=entry.activity,
+                quantity=entry.quantity,
+                comment=entry.comment,
+                duration=entry.duration,
+            )
+            db.session.add(log)
+        db.session.commit()
+        return jsonify({"message": f"{len(entries)} entries inserted."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+app.register_blueprint(eml_bp)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
