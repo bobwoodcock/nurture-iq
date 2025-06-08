@@ -80,7 +80,7 @@ class DailyStatusAnalyzer:
             daily_summary_data (dict): the data that will end up in the template.
         """
         daily_summary_data = {
-            "next_nap": self.next_time("Nap", 1.5),
+            "next_nap": self.next_time("Nap", 2.5),
             "last_paracetemol":  self.next_time("Paracetemol", 0),
             "last_feed_info": self.last_feed_info(),
             "total_nap_time": self.get_total(["Nap"], "duration"),
