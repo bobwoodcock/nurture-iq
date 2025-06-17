@@ -88,7 +88,9 @@ class DailyStatusAnalyzer:
             "food_consumption_goal": "720",
             "vit_d": self.get_total(["Vitamin D"], "quantity"),
             "antacid":  self.get_total(["Antacid"], "quantity"),
-            "antibiotic":  self.get_total(["Antibiotic"], "quantity")
+            "antibiotic":  self.get_total(["Antibiotic"], "quantity"),
+            "solid_food": self.get_total(["Solid Food"], "quantity")
+
         }
         return daily_summary_data
 
